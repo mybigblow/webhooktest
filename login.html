@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+        }
+        
+        .login-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .login-header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .login-form {
+            padding: 40px 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .login-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            border: 1px solid #fcc;
+        }
+        
+        .success {
+            background: #efffef;
+            color: #2a7;
+            border: 1px solid #cfc;
+        }
+        
+        .company-logo {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .company-logo img {
+            height: 40px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                border-radius: 15px;
+            }
+            
+            .login-header {
+                padding: 30px 20px;
+            }
+            
+            .login-form {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Client Portal</h1>
+            <p>Access your products and information</p>
+        </div>
+        
+        <form id="loginForm" class="login-form">
+            <div class="form-group">
+                <label for="username">Email Address</label>
+                <input 
+                    type="email" 
+                    id="username" 
+                    name="username" 
+                    placeholder="Enter your email" 
+                    required
+                    value="laura@sevens.co.za"
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    name="password" 
+                    placeholder="Enter your password" 
+                    required
+                    value="cno2002"
+                >
+            </div>
+            
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span id="btnText">Sign In</span>
+                <span id="btnLoading" style="display: none;">Signing in...</span>
+            </button>
+            
+            <div id="message" class="message"></div>
+        </form>
+        
+        <div class="company-logo">
+            <span style="color: #667eea; font-weight: 600;">Seven Designs</span>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoading = document.getElementById('btnLoading');
+            const message = document.getElementById('message');
+            
+            // Show loading state
+            loginBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline';
+            
+            // Clear previous messages
+            message.style.display = 'none';
+            message.className = 'message';
+            
+            try {
+                // Call your n8n webhook - update this URL to match your n8n instance
+               const response = await fetch('http://n8n.hdd.hk/webhook/cno_client_login', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        username: username,
+        password: password
+    })
+});
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Login successful
+                    message.textContent = 'Login successful! Redirecting...';
+                    message.className = 'message success';
+                    message.style.display = 'block';
+                    
+                    // Redirect to products page with token and client info
+                    setTimeout(() => {
+                        window.location.href = `new-products.html?token=${encodeURIComponent(data.token)}&client_id=${encodeURIComponent(data.client_id)}&client_name=${encodeURIComponent(data.client_name)}&client_email=${encodeURIComponent(data.client_email)}`;
+                    }, 1500);
+                    
+                } else {
+                    // Login failed
+                    message.textContent = data.error || 'Invalid email or password';
+                    message.className = 'message error';
+                    message.style.display = 'block';
+                    
+                    loginBtn.disabled = false;
+                    btnText.style.display = 'inline';
+                    btnLoading.style.display = 'none';
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                message.textContent = 'Network error. Please try again.';
+                message.className = 'message error';
+                message.style.display = 'block';
+                
+                loginBtn.disabled = false;
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+            }
+        });
+        
+        // Auto-login for testing (remove in production)
+        // Uncomment to auto-login when page loads
+        // setTimeout(() => {
+        //     document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+        // }, 1000);
+    </script>
+</body>
+</html>
